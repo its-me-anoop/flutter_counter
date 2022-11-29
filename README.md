@@ -1,5 +1,7 @@
 # flutter_counter
 
+A Flutter Counter app implemented using Bloc Architecture
+
 ## Key Topics
 
 - Observe state changes with ```BlocObserver```.
@@ -280,3 +282,195 @@ export 'view/view.dart';
 ```
 
 ## Todo: Texts
+
+Create ```test/```:
+
+### Counter App Test
+
+Create ```test/app_test.dart```:
+
+```dart
+// ignore_for_file: prefer_const_constructors
+import 'package:flutter/material.dart';
+import 'package:flutter_counter/app.dart';
+import 'package:flutter_counter/counter/counter.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  group('CounterApp', () {
+    testWidgets('is a MaterialApp', (tester) async {
+      expect(CounterApp(), isA<MaterialApp>());
+    });
+
+    testWidgets('renders CounterPage', (tester) async {
+      await tester.pumpWidget(CounterApp());
+      expect(find.byType(CounterPage), findsOneWidget);
+    });
+  });
+}
+```
+
+### Counter Page Test
+
+Create ```test/counter/view/counter_page_test.dart```:
+
+```dart
+// ignore_for_file: prefer_const_constructors
+import 'package:flutter/material.dart';
+import 'package:flutter_counter/counter/counter.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  group('CounterPage', () {
+    testWidgets('renders CounterView', (tester) async {
+      await tester.pumpWidget(MaterialApp(home: CounterPage()));
+      expect(find.byType(CounterView), findsOneWidget);
+    });
+  });
+}
+```
+
+### Counter View Test
+
+Create ```test/counter/view/counter_view_test.dart```:
+
+```dart
+// ignore_for_file: prefer_const_constructors
+
+import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_counter/counter/counter.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+class MockCounterCubit extends MockCubit<int> implements CounterCubit {}
+
+const _incrementButtonKey = Key('counterView_increment_floatingActionButton');
+const _decrementButtonKey = Key('counterView_decrement_floatingActionButton');
+
+void main() {
+  late CounterCubit counterCubit;
+
+  setUp(() {
+    counterCubit = MockCounterCubit();
+  });
+
+  group('CounterView', () {
+    testWidgets('renders current CounterCubit state', (tester) async {
+      when(() => counterCubit.state).thenReturn(42);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: BlocProvider.value(
+            value: counterCubit,
+            child: CounterView(),
+          ),
+        ),
+      );
+      expect(find.text('42'), findsOneWidget);
+    });
+
+    testWidgets('tapping increment button invokes increment', (tester) async {
+      when(() => counterCubit.state).thenReturn(0);
+      when(() => counterCubit.increment()).thenReturn(null);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: BlocProvider.value(
+            value: counterCubit,
+            child: CounterView(),
+          ),
+        ),
+      );
+      await tester.tap(find.byKey(_incrementButtonKey));
+      verify(() => counterCubit.increment()).called(1);
+    });
+
+    testWidgets('tapping decrement button invokes decrement', (tester) async {
+      when(() => counterCubit.state).thenReturn(0);
+      when(() => counterCubit.decrement()).thenReturn(null);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: BlocProvider.value(
+            value: counterCubit,
+            child: CounterView(),
+          ),
+        ),
+      );
+      final decrementFinder = find.byKey(_decrementButtonKey);
+      //await tester.ensureVisible(decrementFinder);
+      await tester.tap(decrementFinder);
+      verify(() => counterCubit.decrement()).called(1);
+    });
+  });
+}
+```
+
+### Counter Cubit Test
+
+Create ```test/counter/cubit/counter_cubit_test.dart```:
+
+```dart
+import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_counter/counter/counter.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  group('CounterCubit', () {
+    test('initial state is 0', () {
+      expect(CounterCubit().state, 0);
+    });
+
+    group('increment', () {
+      blocTest<CounterCubit, int>(
+        'emits [1] when state is 0',
+        build: CounterCubit.new,
+        act: (cubit) => cubit.increment(),
+        expect: () => const <int>[1],
+      );
+
+      blocTest<CounterCubit, int>(
+        'emits [1, 2] when state is 0 and invoked twice',
+        build: CounterCubit.new,
+        act: (cubit) => cubit
+          ..increment()
+          ..increment(),
+        expect: () => const <int>[1, 2],
+      );
+
+      blocTest<CounterCubit, int>(
+        'emits [42] when state is 41',
+        build: CounterCubit.new,
+        seed: () => 41,
+        act: (cubit) => cubit.increment(),
+        expect: () => const <int>[42],
+      );
+    });
+
+    group('decrement', () {
+      blocTest<CounterCubit, int>(
+        'emits [-1] when state is 0',
+        build: CounterCubit.new,
+        act: (cubit) => cubit.decrement(),
+        expect: () => const <int>[-1],
+      );
+
+      blocTest<CounterCubit, int>(
+        'emits [-1, -2] when state is 0 and invoked twice',
+        build: CounterCubit.new,
+        act: (cubit) => cubit
+          ..decrement()
+          ..decrement(),
+        expect: () => const <int>[-1, -2],
+      );
+
+      blocTest<CounterCubit, int>(
+        'emits [42] when state is 43',
+        build: CounterCubit.new,
+        seed: () => 43,
+        act: (cubit) => cubit.decrement(),
+        expect: () => const <int>[42],
+      );
+    });
+  });
+}
+```
