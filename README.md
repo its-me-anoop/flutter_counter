@@ -77,3 +77,44 @@ import 'package: very_good_analysis/very_good_analysis';
 ```
 
 The application uses a feature-driven directory structure. This project structure enables us to scale the project by having self-contained features. In this example we will only have a single feature (the counter itself) but in more complex applications we can have hundreds of different features.
+
+## Bloc Observer
+
+The first thing we're going to take a look at is how to create a ```BlocObserver``` which will help us observe all state changes in the application.
+
+Let's create ```lib/counter_observer.dart:```
+
+```dart
+import 'package:bloc/bloc.dart';
+
+/// [BlocObserver] for the counter application which
+/// observes all state changes.
+class CounterObserver extends BlocObserver {
+  @override
+  void onChange(BlocBase<dynamic> bloc, Change<dynamic> change) {
+    super.onChange(bloc, change);
+    // ignore: avoid_print
+    print('${bloc.runtimeType} $change');
+  }
+}
+```
+
+In this case, we're only overriding ```onChange``` to see all state changes that occur.
+
+Note: ```onChange``` works the same way for both ```Bloc``` and ```Cubit``` instances.
+
+## main.dart
+
+Next, let's replace the contents of main.dart with:
+
+```dart
+import 'package:bloc/bloc.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_counter/app.dart';
+import 'package:flutter_counter/counter_observer.dart';
+
+void main() {
+  Bloc.observer = CounterObserver();
+  runApp(const CounterApp());
+}
+```
