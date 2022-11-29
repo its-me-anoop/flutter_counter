@@ -82,7 +82,7 @@ The application uses a feature-driven directory structure. This project structur
 
 The first thing we're going to take a look at is how to create a ```BlocObserver``` which will help us observe all state changes in the application.
 
-Let's create ```lib/counter_observer.dart:```
+Let's create ```lib/counter_observer.dart```:
 
 ```dart
 import 'package:bloc/bloc.dart';
@@ -123,7 +123,7 @@ We're initializing the CounterObserver we just created and calling runApp with t
 
 ## Counter App
 
-Let's create ```lib/app.dart:```
+Let's create ```lib/app.dart```:
 
 ```CounterApp``` will be a ```MaterialApp``` and is specifying the ```home``` as ```CounterPage```.
 
@@ -146,3 +146,32 @@ class CounterApp extends StatelessWidget {
 ```
 
 Let's take a look at ```CounterPage``` next!
+
+## Counter Page
+
+Let's create ```lib/counter/view/counter_page.dart```:
+
+The ```CounterPage``` widget is responsible for creating a ```CounterCubit``` (which we will look at next) and providing it to the CounterView.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_counter/counter/counter.dart';
+
+/// A [StatelessWidget] which is responsible for providing a
+/// [CounterCubit] instance to the [CounterView].
+class CounterPage extends StatelessWidget {
+  /// Counter Page
+  const CounterPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => CounterCubit(),
+      child: const CounterView(),
+    );
+  }
+}
+```
+
+Note: It's important to separate or decouple the creation of a ```Cubit``` from the consumption of a ```Cubit``` in order to have code that is much more testable and reusable.
