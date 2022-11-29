@@ -260,3 +260,21 @@ class CounterView extends StatelessWidget {
 A ```BlocBuilder``` is used to wrap the ```Text``` widget in order to update the text any time the ```CounterCubit``` state changes. In addition, ```context.read<CounterCubit>()``` is used to look-up the closest ```CounterCubit``` instance.
 
 Note: Only the ```Text``` widget is wrapped in a ```BlocBuilder``` because that is the only widget that needs to be rebuilt in response to state changes in the ```CounterCubit```. Avoid unnecessarily wrapping widgets that don't need to be rebuilt when a state changes.
+
+## Barrel Files
+
+Let's create ```lib/counter/view/view.dart```:
+
+```dart
+export 'counter_page.dart';
+export 'counter_view.dart';
+```
+
+Let's create ```lib/counter/counter.dart```:
+
+Add ```counter.dart``` to export all the public facing parts of the counter feature.
+
+```dart
+export 'cubit/counter_cubit.dart';
+export 'view/view.dart';
+```
