@@ -175,3 +175,32 @@ class CounterPage extends StatelessWidget {
 ```
 
 Note: It's important to separate or decouple the creation of a ```Cubit``` from the consumption of a ```Cubit``` in order to have code that is much more testable and reusable.
+
+## Counter Cubit
+
+Let's create ```lib/counter/cubit/counter_cubit.dart```:
+
+The ```CounterCubit``` class will expose two methods:
+
+- ```increment```: adds 1 to the current state
+- ```decrement```: subtracts 1 from the current state
+
+The type of state the ```CounterCubit``` is managing is just an ```int``` and the initial state is ```0```.
+
+```dart
+import 'package:bloc/bloc.dart';
+
+/// A [Cubit] which manages an [int] as its state.
+class CounterCubit extends Cubit<int> {
+  /// Counter Cubit
+  CounterCubit() : super(0);
+
+  /// Add 1 to the current state.
+  void increment() => emit(state + 1);
+
+  /// Subtract 1 from the current state.
+  void decrement() => emit(state - 1);
+}
+```
+
+Next, let's take a look at the ```CounterView``` which will be responsible for consuming the ```state``` and interacting with the ```CounterCubit```.
