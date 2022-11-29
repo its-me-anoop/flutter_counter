@@ -118,3 +118,31 @@ void main() {
   runApp(const CounterApp());
 }
 ```
+
+We're initializing the CounterObserver we just created and calling runApp with the CounterApp widget which we'll look at next.
+
+## Counter App
+
+Let's create ```lib/app.dart:```
+
+```CounterApp``` will be a ```MaterialApp``` and is specifying the ```home``` as ```CounterPage```.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_counter/counter/counter.dart';
+
+/// A [MaterialApp] which sets the `home` to [CounterPage].
+
+class CounterApp extends StatelessWidget {
+  const CounterApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: CounterPage(),
+    );
+  }
+}
+```
+
+Let's take a look at ```CounterPage``` next!
