@@ -278,3 +278,5 @@ Add ```counter.dart``` to export all the public facing parts of the counter feat
 export 'cubit/counter_cubit.dart';
 export 'view/view.dart';
 ```
+
+## Todo: Texts
